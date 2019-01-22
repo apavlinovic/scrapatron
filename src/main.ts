@@ -42,13 +42,14 @@ if (!process.argv.slice(2).length) {
         $images.each((index, image) => {
             let $image = $(image);
             
-            images.push(new ScrapedImage(
-                url.resolve(base, $image.attr('src')),
-                $image.attr('title') || $image.parent('a').attr('title'),
-                $image.attr('alt')
-                ));
-            }
-        );
+            images.push(
+                new ScrapedImage(
+                    url.resolve(base, $image.attr('src')),
+                    $image.attr('title') || $image.parent('a').attr('title'),
+                    $image.attr('alt')
+                )
+            );
+        });
             
         var imageDownloader = new Downloader('./output');
         
