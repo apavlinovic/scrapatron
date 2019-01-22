@@ -5,6 +5,7 @@ import * as commander from 'commander';
 
 import ScrapedImage from './models/ScrapedImage';
 import Downloader from './tools/Downloader';
+import Navigator from './tools/Navigator';
 
 
 commander
@@ -13,24 +14,26 @@ commander
 .parse(process.argv);
 
 if (!process.argv.slice(2).length) {
-
+    
     commander.outputHelp();
-
+    
 }  else {
     
-    (async () => {    
-        
-        console.log(`Warming up the parser`)
+    (async () => {   
+                
+        console.log(`Warming up`);
         const base = commander.url;
+        const navigator = new Navigator();
 
-        console.log(base)
+        await navigator.Initialize();
+        console.log(`Warm up complete`);
+        
+        await navigator.NavigateTo(base);
+        console.log(`Navigate to: ${ base }`);
 
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        
-        await page.goto(base);
-        const html = await page.content();
-        
+        const html = await navigator.GetPageHtml();
+        console.log(`Fetch HTML: ${ base }`);
+
         const $html = $(html);
         const $images = $html.find('img');
         
@@ -44,21 +47,22 @@ if (!process.argv.slice(2).length) {
                 $image.attr('title') || $image.parent('a').attr('title'),
                 $image.attr('alt')
                 ));
-            });
-            
-            var imageDownloader = new Downloader('./output');
-            
-            for (const i of images) {
-                console.log(`Downloading ${ i.Url }`)
-
-                var fileName = i.GetDownloadFriendlyName();
-                await imageDownloader.Download(i.Url);
-                await imageDownloader.SaveAs(fileName);
-
-                console.log(`-> Saved as ${ fileName }`)
             }
+        );
             
-            console.log("Scraping is complete.")
+        var imageDownloader = new Downloader('./output');
+        
+        for (const i of images) {
+            console.log(`Downloading ${ i.Url }`)
+            
+            var fileName = i.GetDownloadFriendlyName();
+            await imageDownloader.Download(i.Url);
+            await imageDownloader.SaveAs(fileName);
+            
+            console.log(`-> Saved as ${ fileName }`)
+        }
+        
+        console.log("Scraping is complete.")
             
         })();
     }
