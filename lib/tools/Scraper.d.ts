@@ -5,5 +5,6 @@ export default class Scraper {
     Scrape(url: string): Promise<{
         ExtractedLinks: import("../models/ScrapedLink").default[];
         ExtractImages: import("../models/ScrapedImage").default[];
+        HTML: string;
     }>;
 }

@@ -14,7 +14,7 @@ export default class ScrapedImage extends ScrapedBase {
 
         var filenameParts = this.GetFilenameFromUri().split('.');
         
-        this.Name = filenameParts[0];        
+        this.Name = this.SanitizeString(filenameParts[0]);
         this.Extension = filenameParts[filenameParts.length - 1];        
     }
 

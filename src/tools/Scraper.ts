@@ -23,8 +23,9 @@ export default class Scraper {
         console.log(colors.yellow(`Navigated to: ${ url }`));
         
         let images = await this.Navigator.ExtractImages();
-
         let links = await this.Navigator.ExtractLinks();
+        let html = await this.Navigator.GetPageHtml();
+
         links = links.filter(l => l.IsInternal);
 
         console.log(colors.green(`=> SCRAPED: ${ url }`))
@@ -32,7 +33,8 @@ export default class Scraper {
 
         return {
             ExtractedLinks: links,
-            ExtractImages: images
+            ExtractImages: images,
+            HTML: html
         };
     }
 
