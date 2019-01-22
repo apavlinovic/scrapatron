@@ -2,6 +2,8 @@ import * as puppeteer from 'puppeteer';
 export default class Navigator {
     Browser: puppeteer.Browser;
     Page: puppeteer.Page;
+    Ready: boolean;
+    constructor();
     Initialize(options?: puppeteer.LaunchOptions): Promise<void>;
     NavigateTo(url: string, options?: puppeteer.DirectNavigationOptions): Promise<void>;
     GetPageMeta(): Promise<PageMeta>;

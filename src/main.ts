@@ -2,6 +2,8 @@ import * as commander from 'commander';
 import Scraper from './tools/Scraper';
 import ScrapeQue from './tools/ScrapeQue';
 import ScrapedLink from './models/ScrapedLink';
+import ScrapedImage from './models/ScrapedImage';
+import Downloader from './tools/Downloader';
 
 
 commander
@@ -18,8 +20,10 @@ if (!process.argv.slice(2).length) {
     (async () => {   
                 
         const TARGET_URL = commander.url;
-        const scraper = new Scraper('./output');
+        const scraper = new Scraper();
         const link_que = new ScrapeQue();
+        const download_que = new ScrapeQue();
+        const downloader = new Downloader('./output');
 
         link_que.AddToQue([ new ScrapedLink(TARGET_URL) ]);
 
@@ -28,8 +32,9 @@ if (!process.argv.slice(2).length) {
 
             if(nextAvailableUrl) {
                 try {
-                    var connected_urls = await scraper.Scrape(nextAvailableUrl);
-                    link_que.AddToQue(connected_urls);
+                    var result = await scraper.Scrape(nextAvailableUrl);
+                    link_que.AddToQue(result.ExtractedLinks);
+                    download_que.AddToQue(result.ExtractImages);
                 } catch (error) {
                     console.log("ERROR AT URL: " + nextAvailableUrl);
                 } finally {
@@ -38,8 +43,21 @@ if (!process.argv.slice(2).length) {
             }
 
             console.log(link_que.Progress());
+            console.log(`=======================`);
         }
 
+        for (const item of download_que.ToArray()) {
+            var i = item.Context as ScrapedImage;
+            console.log(`Downloading ${ i.Url } (title: ${i.Title}, alt: ${ i.Alt })`)
+            
+            var fileName = i.GetDownloadFriendlyName();
+            await downloader.Download(i.Url);
+            await downloader.SaveAs(fileName);
+
+            download_que.MarkAsComplete(item.Context.Url);
+            console.log(`-> Saved as ${ fileName }`)
+            console.log(download_que.Progress());
+        }        
     })();
 }
     

@@ -4,45 +4,42 @@ import ScrapeQue from './ScrapeQue';
 
 export default class Scraper {
 
-    private Downloader: Downloader;
-    private DownloadQue: ScrapeQue;
+    private Navigator: Navigator;
 
-    constructor(downloadFolder: string) {
-        this.Downloader = new Downloader(downloadFolder);
-        this.DownloadQue = new ScrapeQue();
+    constructor() {
+        this.Navigator = new Navigator();
+    }
+
+    async WarmUp() {
+        console.log(`Warming up`);
+        console.log(`=======================`);
+        await this.Navigator.Initialize();
     }
 
     async Scrape(
         url: string
     ) {
-        let navigator = new Navigator();
+        if(!this.Navigator.Ready)
+            await this.WarmUp();
 
-        console.log(`Warming up`);
-        await navigator.Initialize();
-
-        await navigator.NavigateTo(url);
+        await this.Navigator.NavigateTo(url);
         console.log(`Navigated to: ${ url }`);
         
-        let images = await navigator.ExtractImages();
+        let images = await this.Navigator.ExtractImages();
         console.log(`Images extracted: ${ images.length } images found.`);
 
-        let links = await navigator.ExtractLinks();
+        let links = await this.Navigator.ExtractLinks();
         links = links.filter(l => l.IsInternal);
 
         console.log(`Links extracted: ${ links.length } internal links found.`);
 
-        for (const i of images) {
-            console.log(`Downloading ${ i.Url } (title: ${i.Title}, alt: ${ i.Alt })`)
-            
-            var fileName = i.GetDownloadFriendlyName();
-            await this.Downloader.Download(i.Url);
-            await this.Downloader.SaveAs(fileName);
-            
-            console.log(`-> Saved as ${ fileName }`)
-        }
+        console.log(`SCRAPED: ${ url }`)
+        console.log(`=======================`);
 
-        console.log("Scraping is complete.")
-        return links;
+        return {
+            ExtractedLinks: links,
+            ExtractImages: images
+        };
     }
 
 

@@ -1,17 +1,18 @@
+import ScrapedImage from "../models/ScrapedImage";
 import ScrapedLink from "../models/ScrapedLink";
 
 export default class ScrapeQue {
 
-    List: any;
+    List: IQueItem;
 
     constructor() {
         this.List = {};
     }
 
-    AddToQue(links: Array<ScrapedLink>) {
+    AddToQue(links: Array<ScrapedImage | ScrapedLink>) {
         links.forEach(l => {
             if(!this.List[l.Url]) {
-                this.List[l.Url] = false;
+                this.List[l.Url] = new Item(l);
             }
         })
     }
@@ -19,7 +20,7 @@ export default class ScrapeQue {
     Next() {
         for (const url in this.List) {
             if (this.List.hasOwnProperty(url)) {
-                if(this.List[url] == false) {
+                if(!this.List[url].Complete) {
                     return url;
                 }
             }
@@ -32,7 +33,7 @@ export default class ScrapeQue {
 
         for (const url in this.List) {
             if (this.List.hasOwnProperty(url)) {
-                if(this.List[url] == false) {
+                if(!this.List[url].Complete) {
                     incomplete++;
                 } else {
                     complete++;
@@ -46,20 +47,38 @@ export default class ScrapeQue {
             Pending: incomplete
         }
     }
+
+    ToArray() {
+        return Object.values(this.List);
+    }
     
     MarkAsComplete(url: string) {
-        this.List[url] = true;
+        this.List[url].Complete = true;
     }
 
     IsFinished() {
         for (const url in this.List) {
             if (this.List.hasOwnProperty(url)) {
-                if(this.List[url] == false) {
+                if(!this.List[url].Complete) {
                     return false;
                 }
             }
         }
 
         return true;
+    }
+}
+
+interface IQueItem {
+    [key: string]: Item
+}
+
+class Item {
+    Complete: boolean;
+    Context: ScrapedImage | ScrapedLink;
+
+    constructor(context: ScrapedImage | ScrapedLink) {
+        this.Complete = false;
+        this.Context = context;        
     }
 }

@@ -18,8 +18,6 @@ async function ExtractLinks(html: string, baseUrl: string) {
         links.push(
             new ScrapedLink(
                 _url,
-                $link.attr('title'),
-                $link.attr('alt'),
                 isInternal
             )
         );

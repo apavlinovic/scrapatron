@@ -5,10 +5,16 @@ export default class Navigator {
     
     Browser!: puppeteer.Browser;
     Page!: puppeteer.Page;
+    Ready: boolean;
+
+    constructor() {
+        this.Ready = false;        
+    }
 
     async Initialize(options?: puppeteer.LaunchOptions) {
         this.Browser = await puppeteer.launch(options);
         this.Page = await this.Browser.newPage();
+        this.Ready = true;
     }
 
     async NavigateTo(url: string, options?: puppeteer.DirectNavigationOptions) {
