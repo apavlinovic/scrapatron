@@ -2,21 +2,28 @@ import fetch, { Response } from 'node-fetch';
 import * as fs from 'fs';
 
 export default class Downloader {
-    SaveTo: string;
-    Response: Response;
-
+    private DownloadFolder: string;
+    private Response: Response;
     private DefaultDownloadProtocol = 'http:';
 
-    constructor(saveTo: string) {
-        this.SaveTo = saveTo;
+    constructor(downloadFolderPath: string) {
+        this.DownloadFolder = downloadFolderPath;
         this.Response = new Response();
     }
 
-    async Download(url: string, ) {
+    SetDownloadFolder(downloadFolderPath: string) {
+        this.DownloadFolder = downloadFolderPath;
+    }
+
+    async Download(url: string) {
         if(url.startsWith('//')) {
+
             url = `${ this.DefaultDownloadProtocol }${ url }`;
+
         } else if(!(url.startsWith('http://') || url.startsWith('https://'))) {
+
             url = `${ this.DefaultDownloadProtocol }//${ url }`;
+
         };
 
         this.Response = await fetch(url);
@@ -31,6 +38,6 @@ export default class Downloader {
     }
 
     private buildDestinationPathname(filename: string) {
-        return `${ this.SaveTo }/${filename}`;
+        return `${ this.DownloadFolder }/${filename}`;
     }
 }

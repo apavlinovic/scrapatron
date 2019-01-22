@@ -8,13 +8,11 @@
     "start": "tsc && node lib/main.js",
     "build": "tsc"
   },
-
   "husky": {
     "hooks": {
       "pre-commit": "npm run build"
     }
   },
-
   "author": "",
   "license": "ISC",
   "dependencies": {

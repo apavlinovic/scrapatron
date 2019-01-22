@@ -1,4 +1,5 @@
 import ScrapedBase from "./ScrapedBase";
 export default class ScrapedLink extends ScrapedBase {
-    constructor(url: string, title?: string, alt?: string);
+    IsInternal: boolean;
+    constructor(url: string, title?: string, alt?: string, isInternal?: boolean);
 }

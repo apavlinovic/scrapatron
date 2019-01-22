@@ -1,9 +1,9 @@
-import { Response } from 'node-fetch';
 export default class Downloader {
-    SaveTo: string;
-    Response: Response;
+    private DownloadFolder;
+    private Response;
     private DefaultDownloadProtocol;
-    constructor(saveTo: string);
+    constructor(downloadFolderPath: string);
+    SetDownloadFolder(downloadFolderPath: string): void;
     Download(url: string): Promise<void>;
     SaveAs(filename: string): Promise<void>;
     private buildDestinationPathname;

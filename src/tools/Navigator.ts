@@ -1,5 +1,6 @@
 import * as puppeteer from 'puppeteer';
-
+import ExtractImages from './Extractors/ImageExtractor';
+import ExtractLinks from './Extractors/LinkExtractor';
 export default class Navigator {
     
     Browser!: puppeteer.Browser;
@@ -11,20 +12,13 @@ export default class Navigator {
     }
 
     async NavigateTo(url: string, options?: puppeteer.DirectNavigationOptions) {
+        this.CheckIfNavigatorIsReady();
 
-        if(!this.Browser && !this.Page) {
-            throw "Navigator is not ready yet.";
-        }
-
-        if(this.Page) {
-            await this.Page.goto(url, options)
-        }
+        await this.Page.goto(url, options)
     };
 
     async GetPageMeta() {
-        if(!this.Browser && !this.Page) {
-            throw "Navigator is not ready yet.";
-        }
+        this.CheckIfNavigatorIsReady();
 
         let title = await this.Page.title();
         let url = this.Page.url();
@@ -33,13 +27,30 @@ export default class Navigator {
     };
 
     async GetPageHtml() {
-        if(!this.Browser && !this.Page) {
-            throw "Navigator is not ready yet.";
-        }
+        this.CheckIfNavigatorIsReady();
 
         return await this.Page.content();
     };
 
+    async ExtractImages() {
+        let html = await this.GetPageHtml();
+        let meta = await this.GetPageMeta();
+
+        return await ExtractImages(html, meta.Url);
+    };
+
+    async ExtractLinks() {
+        let html = await this.GetPageHtml();
+        let meta = await this.GetPageMeta();
+
+        return await ExtractLinks(html, meta.Url);
+    };    
+
+    private CheckIfNavigatorIsReady() {
+        if(!this.Browser && !this.Page) {
+            throw "Navigator is not ready yet.";
+        }
+    }
 }
 
 class PageMeta {
