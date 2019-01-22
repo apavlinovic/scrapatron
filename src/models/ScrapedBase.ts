@@ -27,7 +27,14 @@ export default class ScrapedBase {
 
 
     private GetFilenameFromUri() {
-        return this.Url.substring(this.Url.lastIndexOf('/') + 1);
+        var fileName = this.Url.substring(this.Url.lastIndexOf('/') + 1);
+        var queryStringIndex = fileName.indexOf('?');
+
+        if(queryStringIndex != -1) {
+            fileName = fileName.slice(0, queryStringIndex);
+        }
+
+        return fileName;
     }
 
     private GetFileNameFromTitle() {
@@ -45,6 +52,7 @@ export default class ScrapedBase {
     }
 
     private SanitizeString(input: string) {
+
         return input.toLowerCase().replace(/[^\w\s-_]/gi, '').replace(/\s+/g, '-').replace('--', '-')
     }
 }

@@ -1,14 +1,15 @@
 import Navigator from './Navigator';
 import Downloader from './Downloader';
+import ScrapeQue from './ScrapeQue';
 
 export default class Scraper {
 
     private Downloader: Downloader;
-    private ScrapeList: any;
+    private DownloadQue: ScrapeQue;
 
     constructor(downloadFolder: string) {
         this.Downloader = new Downloader(downloadFolder);
-        this.ScrapeList = {};
+        this.DownloadQue = new ScrapeQue();
     }
 
     async Scrape(
@@ -29,8 +30,9 @@ export default class Scraper {
         links = links.filter(l => l.IsInternal);
 
         console.log(`Links extracted: ${ links.length } internal links found.`);
+
         for (const i of images) {
-            console.log(`Downloading ${ i.Url }`)
+            console.log(`Downloading ${ i.Url } (title: ${i.Title}, alt: ${ i.Alt })`)
             
             var fileName = i.GetDownloadFriendlyName();
             await this.Downloader.Download(i.Url);
@@ -40,6 +42,7 @@ export default class Scraper {
         }
 
         console.log("Scraping is complete.")
+        return links;
     }
 
 

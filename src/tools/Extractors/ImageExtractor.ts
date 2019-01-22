@@ -15,7 +15,7 @@ async function ExtractImages(html: string, baseUrl: string) {
         images.push(
             new ScrapedImage(
                 url.resolve(baseUrl, $image.attr('src')),
-                $image.attr('title'),
+                $image.attr('title') || $image.parent().attr('title'),
                 $image.attr('alt')
             )
         );
