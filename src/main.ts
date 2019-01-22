@@ -1,12 +1,10 @@
-import * as colors from 'colors/safe';
 import * as commander from 'commander';
-
 import Scraper from './tools/Scraper';
 import ScrapeQue from './tools/ScrapeQue';
 import ScrapedLink from './models/ScrapedLink';
 import ScrapedImage, { NamingStrategy } from './models/ScrapedImage';
 import Downloader from './tools/Downloader';
-import * as $ from 'cheerio';
+import * as colors from 'colors/safe';
 
 commander
 .option('-u, --url <href>', 'Target URL that will be scraped')
@@ -29,59 +27,8 @@ if (!process.argv.slice(2).length) {
         const download_que = new ScrapeQue();
         const downloader = new Downloader('./output');
 
-        
-        var result = await scraper.Scrape(TARGET_URL);
-        result.ExtractedLinks = result.ExtractedLinks.filter(link => link.Url.indexOf('/hero') != -1);
-        
-        link_que.AddToQue(result.ExtractedLinks);
+        link_que.AddToQue([ new ScrapedLink(TARGET_URL) ]);
 
-        while(!link_que.IsFinished()) {
-            var nextAvailableUrl = link_que.Next();
-
-            if(nextAvailableUrl) {
-                try {
-                    var result = await scraper.Scrape(nextAvailableUrl);
-                    var $html = $(result.HTML);
-
-                    let title = $html.find('.hero-name').text();
-                    let heroclass = $html.find('.hero-mess-con .hero-zhiye:nth-child(1) .hero-wenan').text();
-                    let widthHeight = $html.find('.hero-mess-con .hero-zhiye:nth-child(2) .hero-wenan').text();
-                    let measurments = $html.find('.hero-mess-con .hero-zhiye:nth-child(3) .hero-wenan').text();
-                    let appearance = $html.find('.hero-mess-con .hero-zhiye:nth-child(4) .hero-wenan').text();
-                    let allegiance = $html.find('.hero-mess-con .hero-zhiye:nth-child(5) .hero-wenan').text();
-                    let featured_img = $html.find('.hero-people-img img').attr('src');
-                    let hero_story = $html.find('.hero-story .index_list_content div').text();
-                    let hero_stats = $html.find('.hero-shuxing .index_list_content').html();
-                    let hero_talent : Array<any> = [];
-                    let hero_tree : Array<any> = [];
-
-                    $html.find('.hero-tianfu li').each((i, element) => {
-                        hero_talent.push({
-                            img: $(element).find('img').attr('src'),
-                            name: $(element).find('.hero-tianfu-txt p:first-child').text(),
-                            description: $(element).find('.hero-tianfu-txt p:nth-child(2)').text(),
-                        })
-                    });
-
-                    $html.find('.hero-list-zhuanzhi li').each((i, element) => {
-                        hero_tree.push({
-                            img: $(element).find('img').attr('src'),
-                            name: $(element).find('span').text(),
-                        })
-                    });
-
-                    console.log(title, heroclass, widthHeight, measurments, appearance, allegiance, featured_img, hero_story, hero_stats, hero_talent, hero_tree);
-                } catch (error) {
-                    console.log(colors.red("ERROR AT URL: " + nextAvailableUrl));
-                } finally {
-                    link_que.MarkAsComplete(nextAvailableUrl);
-                }
-            }
-
-            console.log(colors.blue(`Progress: ${ link_que.Progress().Completed } / ${ link_que.Progress().Total }`));
-            console.log('')
-        }            
-        /*
         while(!link_que.IsFinished()) {
             var nextAvailableUrl = link_que.Next();
 
@@ -124,7 +71,7 @@ if (!process.argv.slice(2).length) {
             console.log(colors.green(`-> Saved as ${ fileName }`))
             console.log(colors.blue(`Progress: ${ download_que.Progress().Completed } / ${ download_que.Progress().Total }`));
             console.log('')
-        }        */
+        }        
     })();
 }
     
