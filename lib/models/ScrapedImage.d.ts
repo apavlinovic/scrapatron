@@ -5,9 +5,13 @@ export default class ScrapedImage extends ScrapedBase {
     Alt: string | undefined;
     Title: string | undefined;
     constructor(url: string, title?: string, alt?: string);
-    GetDownloadFriendlyName(): string;
+    GetDownloadFriendlyName(namingStrategy?: NamingStrategy): string;
     private GetFilenameFromUri;
     private GetFileNameFromTitle;
     private GetFilenameFromAlt;
     private SanitizeString;
+}
+export declare enum NamingStrategy {
+    TitleOrAlt = 1,
+    FilenameOnly = 2
 }

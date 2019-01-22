@@ -19,11 +19,13 @@ export default class ScrapedImage extends ScrapedBase {
     }
 
 
-    GetDownloadFriendlyName() : string {
+    GetDownloadFriendlyName(namingStrategy: NamingStrategy = NamingStrategy.FilenameOnly) : string {
 
         var filenameFromUri = this.GetFilenameFromUri();
 
-        if(this.Alt || this.Title) {
+        if(namingStrategy == NamingStrategy.TitleOrAlt && (this.Alt || this.Title)) 
+        {
+            console.log("Using alt or title...")
             var fileName = this.GetFileNameFromTitle() || this.GetFilenameFromAlt();
             var result = this.Extension 
                             ? `${ fileName }-${ this.Name }.${ this.Extension }` 
@@ -65,4 +67,9 @@ export default class ScrapedImage extends ScrapedBase {
 
         return input.toLowerCase().replace(/[^\w\s-_]/gi, '').replace(/\s+/g, '-').replace(/-{2,}/g, '-')
     }    
+}
+
+export enum NamingStrategy {
+    TitleOrAlt = 1,
+    FilenameOnly = 2
 }
