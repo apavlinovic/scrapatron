@@ -10,17 +10,6 @@ Scrapatron is a tool that "scrapes" aka bulk downloads various assets from a tar
 
     npm start -- --u https://www.myexampleurl.com
 
-**Roadmap:**
-
-- Implement image scraper
-- Unit tests for image scraper
-- Implement arbitrary content scraper
-- Unit tests for arbitrary content scraper
-- Implement URL navigator
-- Unit tests for URL navigator
-- Implement different output strategies (per type, per URL)
-- Unit tests
-
 **Hooks:**
 
 - pre-commit hook is active. TSC must pass.
